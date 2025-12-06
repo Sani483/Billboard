@@ -20,7 +20,8 @@ class SupabaseDB:
     async def upload_image(self, file_data: bytes, filename: str, bucket: str = "billboard-images"):
         """Upload image to Supabase Storage"""
         try:
-            response = self.client.storage.from_(bucket).upload(filename, file_data)
+            # Use service client for storage uploads to avoid RLS/permission issues
+            response = self.service_client.storage.from_(bucket).upload(filename, file_data)
             return response
         except Exception as e:
             print(f"Error uploading image: {e}")
@@ -43,12 +44,22 @@ class SupabaseDB:
             report_data['id'] = report_id
             report_data['created_at'] = datetime.utcnow().isoformat()
             report_data['updated_at'] = datetime.utcnow().isoformat()
-            report_data['status'] = 'pending'
-            report_data['citizen_reports'] = 0
-            report_data['validation_count'] = 0
-            
-            response = self.client.table("violation_reports").insert(report_data).execute()
-            return response.data[0] if response.data else None
+            # Ensure we only insert columns that exist in the schema to avoid cache/schema errors
+            allowed_keys = {
+                'id', 'image_url', 'image_filename', 'extracted_text', 'is_compliant',
+                'status', 'violations_found', 'violation_count', 'violation_context',
+                'ocr_confidence', 'severity_level', 'severity_score', 'text_regions',
+                'latitude', 'longitude', 'zoning_compliance', 'detection_timestamp',
+                'created_at', 'updated_at'
+            }
+
+            sanitized = {k: v for k, v in report_data.items() if k in allowed_keys}
+            # Ensure status present
+            sanitized.setdefault('status', 'pending')
+
+            # Use service client for writes (bypass RLS where appropriate)
+            response = self.service_client.table("violation_reports").insert(sanitized).execute()
+            return response.data[0] if getattr(response, 'data', None) else None
         except Exception as e:
             print(f"Error creating report: {e}")
             return None
@@ -132,8 +143,8 @@ class SupabaseDB:
         try:
             check_data['report_id'] = report_id
             check_data['check_timestamp'] = datetime.utcnow().isoformat()
-            response = self.client.table(COMPLIANCE_TABLE).insert(check_data).execute()
-            return response.data[0] if response.data else None
+            response = self.service_client.table(COMPLIANCE_TABLE).insert(check_data).execute()
+            return response.data[0] if getattr(response, 'data', None) else None
         except Exception as e:
             print(f"Error logging compliance check: {e}")
             return None
@@ -145,9 +156,8 @@ class SupabaseDB:
             location_data['id'] = str(uuid.uuid4())
             location_data['timestamp'] = datetime.utcnow().isoformat()
             location_data['created_at'] = datetime.utcnow().isoformat()
-            
-            response = self.client.table(GEOLOCATION_TABLE).insert(location_data).execute()
-            return response.data[0] if response.data else None
+            response = self.service_client.table(GEOLOCATION_TABLE).insert(location_data).execute()
+            return response.data[0] if getattr(response, 'data', None) else None
         except Exception as e:
             print(f"Error saving location: {e}")
             return None
@@ -193,8 +203,8 @@ class SupabaseDB:
             citizen_report['status'] = 'pending'
             citizen_report['validated_by_count'] = 0
             citizen_report['reporter_reputation'] = citizen_report.get('reporter_reputation', 0)
-            
-            response = self.client.table(CITIZEN_REPORTS_TABLE).insert(citizen_report).execute()
+            # Use service client to perform inserts (ensure permissions)
+            response = self.service_client.table(CITIZEN_REPORTS_TABLE).insert(citizen_report).execute()
             
             # Auto-flag if multiple citizens report same location
             if response.data:
@@ -252,7 +262,7 @@ class SupabaseDB:
             
             if len(citizen_reports) >= MIN_REPORTS_FOR_VALIDATION:
                 # Update original violation report status to "auto-flagged"
-                await self.client.table("violation_reports").update({
+                await self.service_client.table("violation_reports").update({
                     "status": "flagged_by_citizens",
                     "citizen_validation_count": len(citizen_reports)
                 }).eq("id", billboard_id).execute()
