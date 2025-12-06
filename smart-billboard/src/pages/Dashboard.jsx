@@ -24,13 +24,18 @@ const Dashboard = () => {
       if (statsRes.ok) {
         const statsData = await statsRes.json();
         setStatistics(statsData.statistics);
+      } else {
+        console.warn('Statistics endpoint returned:', statsRes.status);
       }
 
       // Fetch reports
       const reportsRes = await fetch(`${API_URL}/reports?limit=10`);
       if (reportsRes.ok) {
         const reportsData = await reportsRes.json();
-        setReports(reportsData.reports);
+        // Backend returns 'data' field, not 'reports'
+        setReports(reportsData.data || reportsData.reports || []);
+      } else {
+        console.warn('Reports endpoint returned:', reportsRes.status);
       }
 
       setError(null);

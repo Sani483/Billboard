@@ -4,3 +4,10 @@ env/
 
 __pycache__
 *.pyc
+API_TESTING_GUIDE.md
+
+IMPLEMENTATION_NOTES.md
+
+QUICKSTART.md
+
+SETUP_GUIDE.md

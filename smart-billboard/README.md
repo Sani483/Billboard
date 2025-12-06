@@ -1,78 +1,146 @@
-# Smart Billboard Compliance Detection
+```md
+# 🧠 Smart Billboard Compliance Detection
 
-A smart city solution designed to detect unauthorized billboards, measure their dimensions, and identify non-compliant or "toxic" content based on government regulations.
+A smart-city solution designed to detect **unauthorized billboards**, measure **their dimensions**, and identify **non-compliant or “toxic” advertising content** based on government regulations.
 
-## 📋Project Overview
+## 📋 Project Overview
 
-Urban areas struggle with unauthorized advertising that poses safety hazards and revenue loss. This application provides an interface for field agents and citizens to capture billboard images. The system is designed to use AI to automatically:
+Unauthorized and non-compliant billboards lead to:
 
-1. Detect Text: Analyze content for keywords deemed illegal or "toxic" by local governance (specifically tailored for Indian regulations).
-2. Measure Dimensions: Estimate the physical size of the billboard to check against zoning permits.
-3. Report: Geotag and upload violations to a central dashboard.
+- Safety hazards  
+- Visual pollution  
+- Loss of municipal revenue  
+- Promotion of banned or harmful content  
+
+This system empowers **field agents** and **citizens** to capture billboard images, while the backend uses AI to automatically:
+
+1. **Detect Text:** Extract text from the billboard and identify banned or “toxic” keywords as per local regulations (India-specific).
+2. **Measure Dimensions:** Estimate the physical size of the billboard using computer-vision techniques.
+3. **Report Violations:** Geotag, analyze, and upload data to a centralized dashboard for authorities.
+
+---
 
 ## 🚀 Tech Stack
 
-Frontend (Current)
+### **Frontend (Current)**
 
-- Framework: [React] (https://react.dev/reference/react)
-- Styling: [Tailwind CSS] (https)
-- Icons: Lucide React
+- **Framework:** React  
+- **Styling:** Tailwind CSS  
+- **Icons:** Lucide-React  
 
-Backend & AI (Roadmap/In-Progress)
+### **Backend & AI (In Progress / Roadmap)**
 
-- API Framework: FastAPI (Python)
-- Database & Storage: Supabase
-- Computer Vision: OpenCV (Dimension estimation)
-- OCR: Tesseract / EasyOCR (Text extraction)
+- **API Framework:** FastAPI (Python)  
+- **Database & Storage:** Supabase  
+- **Computer Vision:** OpenCV  
+- **OCR:** Tesseract / EasyOCR  
 
-## 🛠️ Installation & SetupPrerequisitesNode.js (v18 or higher)npm or yarn
+---
 
-1.  Clone the Repository 
-``` bash git clone [https://github.com/your-username/smart-billboard.git](https://github.com/your-username/smart-billboard.git)```
+## 🛠️ Installation & Setup
+
+### **Prerequisites**
+
+- Node.js (v18 or higher)  
+- npm or yarn  
+
+---
+
+### **1. Clone the Repository**
+```bash
+git clone https://github.com/your-username/smart-billboard.git
 cd smart-billboard
-2.  Install Frontend Dependencies
-``` bash npm install ```
-3. Configure Tailwind CSSEnsure ``` bash tailwind.config.js``` is set to scan your source files:/** 
- bash @type {import('tailwindcss').Config} */
-    export default {
-    content: [
-        "./index.html",
-        "./src/**/*.{js,ts,jsx,tsx}",
-    ],
-    theme: {
-        extend: {},
-    },
-    plugins: [],
-    }
-4. Run the Application 
-``` bash npm run dev```
-Access the app at ``` bash http://localhost:5173.``` 
-## 📂Project Structure
-``` bash src/
-├── components/       # Reusable UI components
-│   └── Shared.jsx    # Buttons, Cards, and other shared UI elements
-├── pages/            # Main application screens
-│   ├── Overview.jsx  # Landing page with problem statement & features
-│   ├── Detect.jsx    # Image capture/upload & AI analysis trigger
-│   └── Dashboard.jsx # Statistics and reporting interface
-├── App.jsx           # Main routing and layout logic
-└── main.jsx          # Entry point 
-``` 
+```
+
+### **2. Install Frontend Dependencies**
+```bash
+npm install
+```
+
+### **3. Configure TailwindCSS**
+Ensure your **tailwind.config.js** scans the correct files:
+
+```js
+/** @type {import('tailwindcss').Config} */
+export default {
+  content: [
+    "./index.html",
+    "./src/**/*.{js,ts,jsx,tsx}",
+  ],
+  theme: {
+    extend: {},
+  },
+  plugins: [],
+}
+```
+
+### **4. Run the Application**
+```bash
+npm run dev
+```
+
+Access the app at:
+```
+http://localhost:5173
+```
+
+---
+
+## 📂 Project Structure
+
+```bash
+src/
+├── components/         # Reusable UI components
+│   └── Shared.jsx      # Buttons, cards, and shared design elements
+├── pages/              # Main app screens
+│   ├── Overview.jsx    # Problem statement & app overview
+│   ├── Detect.jsx      # Image upload/capture and AI trigger
+│   └── Dashboard.jsx   # Statistics, logs, and compliance reports
+├── App.jsx             # Routing and global layout
+└── main.jsx            # Entry point
+```
+
+---
+
 ## 🔮 Future Backend Integration (FastAPI + Supabase)
 
-The frontend is designed to integrate with a FastAPI backend. The Detect.jsx page currently simulates the analysis process but is ready to send FormData to an API endpoint.
+The frontend is designed to integrate with a FastAPI backend.  
+`Detect.jsx` currently simulates analysis results but is ready to send **FormData** to an API endpoint.
 
-### Planned Workflow
+### **Planned Workflow**
 
-1. Upload: User selects an image in React.
+#### **1. Upload**
+User selects or captures an image.
 
-2. API Call: Image is sent to POST /api/analyze.
+#### **2. API Call**
+Frontend sends image to:
 
-3. Processing:
+```
+POST /api/analyze
+```
 
-- Supabase: Image is stored in a storage bucket; URL is retrieved.
+#### **3. Processing**
 
-- AI Engine: Python script runs OCR to find banned words (e.g., hate speech, unauthorized substance ads).- 
-- Dimensions: Computer vision algorithm estimates the billboard area.
+- **Supabase:** Stores the image in a bucket and returns a URL.
+- **OCR Engine:** Extracts text and checks for banned or harmful keywords.
+- **OpenCV:** Measures billboard dimensions using CV algorithms.
 
-4. Response: JSON data containing isToxic, dimensions, and complianceStatus is returned to the frontend.🤝 
+#### **4. Response Example**
+```json
+{
+  "isToxic": false,
+  "dimensions": "12x8 ft",
+  "complianceStatus": "Compliant",
+  "imageUrl": "..."
+}
+```
+
+---
+
+## 🤝 Contributing
+
+Contributions are welcome!  
+Feel free to fork this repo and submit a PR.
+
+---
+```
