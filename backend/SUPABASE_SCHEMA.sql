@@ -64,7 +64,7 @@ CREATE TABLE citizen_reports (
     description TEXT NOT NULL,
     status TEXT DEFAULT 'submitted',  -- submitted, validated, flagged, resolved, rejected
     validated_by_count INTEGER DEFAULT 0,  -- Number of citizens who validated
-    validator_ids TEXT[],  -- List of validator user IDs
+    validator_ids TEXT[],  
     submitted_at TIMESTAMP DEFAULT now(),
     created_at TIMESTAMP DEFAULT now(),
     updated_at TIMESTAMP DEFAULT now()
